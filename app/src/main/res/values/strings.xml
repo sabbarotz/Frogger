@@ -9,6 +9,4 @@
     <string name="str_btn_highscore">Highscore</string>
     <string name="str_btn_settings">Settings</string>
     <string name="str_btn_credits">Credits</string>
-
-    <string name="test2">Teststring</string>
 </resources>
