@@ -53,7 +53,7 @@ public class GameActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_game);
-        setupActionBar();
+        // setupActionBar();
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
         final View contentView = findViewById(R.id.fullscreen_content);
@@ -116,6 +116,11 @@ public class GameActivity extends Activity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         //findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+
+// requesting to turn the title OFF
+
+        // set our MainGamePanel as the View
+        setContentView(new MainGamePanel(this)); //MF 25.5. Zeichenfläche für die GameActivity
     }
 
     @Override
