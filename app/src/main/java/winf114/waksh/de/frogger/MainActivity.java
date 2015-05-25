@@ -64,4 +64,9 @@ public class MainActivity extends ActionBarActivity {
     public void onclick_credits(View view) {
         show_toast("Credits");
     }
+
+    public void onclick_exit(View view) {
+        show_toast("beende Frogger");
+        this.finish();
+    }
 }
