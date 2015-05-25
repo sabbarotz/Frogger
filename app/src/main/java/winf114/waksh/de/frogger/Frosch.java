@@ -4,10 +4,10 @@ package winf114.waksh.de.frogger;
  * Created by bhaetsch on 25.05.2015.
  */
 public class Frosch {
-    private int x;
-    private int y;
-    private int breite;
-    private int hoehe;
+    private int x;                  //horizontale Position der linken oberen Ecke
+    private int y;                  //vertikale Position der linken oberen Ecke
+    private int breite;             //in Pixeln
+    private int hoehe;              //in Pixeln
 
     public Frosch(int x, int y, int breite, int hoehe) {
         this.setX(x);

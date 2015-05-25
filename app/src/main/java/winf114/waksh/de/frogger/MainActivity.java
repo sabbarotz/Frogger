@@ -1,5 +1,6 @@
 package winf114.waksh.de.frogger;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -48,7 +49,8 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void onclick_play(View view) {
-        show_toast("Play Game");
+        Intent intent = new Intent(this, GameActivity.class);
+        startActivity(intent);
     }
 
     public void onclick_highscore(View view) {
