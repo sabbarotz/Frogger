@@ -35,10 +35,17 @@
         android:onClick="onclick_settings" />
 
     <Button
-        android:id="@+id/btn_credits"
+    android:id="@+id/btn_credits"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="@string/str_btn_credits"
+    android:onClick="onclick_credits" />
+
+    <Button
+        android:id="@+id/btn_exit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/str_btn_credits"
-        android:onClick="onclick_credits" />
+        android:text="@string/str_btn_exit"
+        android:onClick="onclick_exit" />
 
 </LinearLayout>
