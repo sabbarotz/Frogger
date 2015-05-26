@@ -6,9 +6,30 @@
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
-    <TextView android:id="@+id/fullscreen_content" android:layout_width="match_parent"
+
+    <!--<TextView android:id="@+id/fullscreen_content" android:layout_width="match_parent"
         android:layout_height="match_parent" android:keepScreenOn="true" android:textColor="#33b5e5"
-         />
+         /> -->
+
+    <SurfaceView
+        android:id="@+id/surfaceView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight = "1"
+        android:background="#0e2f44" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#cd3700"
+        android:text="Hallo Welt!" ></TextView>
+
+    <ImageView
+        android:id="@+id/frosch"
+        android:src="@drawable/ic_launcher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
@@ -21,7 +42,37 @@
             android:background="@color/black_overlay" android:orientation="horizontal"
             tools:ignore="UselessParent">
 
+            <Button
+                android:id="@+id/links"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/links_button_text" />
+
+            <Button
+                android:id="@+id/rechts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rechts_button_text" />
+
+            <Button
+                android:id="@+id/oben"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/oben_button_text" />
+
+            <Button
+                android:id="@+id/unten"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/unten_button_text" />
+
         </LinearLayout>
+
+
+
+
+
+
     </FrameLayout>
 
 </FrameLayout>
