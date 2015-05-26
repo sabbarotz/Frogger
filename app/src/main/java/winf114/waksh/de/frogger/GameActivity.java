@@ -1,7 +1,6 @@
 package winf114.waksh.de.frogger;
 
 import winf114.waksh.de.frogger.util.SystemUiHider;
-
 import android.annotation.TargetApi;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -54,9 +53,11 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
 
         mainThread = new MainThread(surfaceHolder, this);
         frosch = new Frosch(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher), 20,20,10,10);
-        Canvas canvas;
 
+
+        // 4 Knöpfe und ein Test-Textfeld
         textView = (TextView) findViewById(R.id.textView1);
+
         Button linksButton = (Button) findViewById(R.id.links);
         linksButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -74,20 +75,23 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
         Button untenButton = (Button) findViewById(R.id.unten);
         untenButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                finish();
+                textView.setText("Unten");
             }
         });
 
+        Button obenButton = (Button) findViewById(R.id.oben);
+        obenButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                textView.setText("Oben");
+            }
+        });
 
-        // ??
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
-        final View contentView = findViewById(R.id.fullscreen_content);
+        final View contentView = findViewById(R.id.surfaceView);
 
 
-        // Zeugs zum Menue verstecken
-
-    /*
-    /mSystemUiHider = SystemUiHider.getInstance(this, contentView, HIDER_FLAGS);
+    // Zeugs zum Menue verstecken
+    mSystemUiHider = SystemUiHider.getInstance(this, contentView, HIDER_FLAGS);
         mSystemUiHider.setup();
         mSystemUiHider
                 .setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
@@ -137,9 +141,6 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
                 }
             }
         });
-        */
-        // alt mit Extra View
-        // setContentView(new MainGamePanel(this)); //MF 25.5. Zeichenfläche für die GameActivity
     }
 
 
@@ -174,6 +175,7 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
     // render Methode
 
     protected void onDraw(Canvas canvas) {
+        // überflüssig
         canvas.drawColor(Color.parseColor("#0e2f44"));
         p.setColor(0xffffffff);
         canvas.drawLine(0, 1000, 100, 1000, p);
@@ -243,9 +245,9 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
 
     private void delayedHide(int delayMillis) {
 
-        // Absturz verursacht (DeBug)
+        // Funktioniert aber nervt ^.^
 
-        //mHideHandler.removeCallbacks(mHideRunnable);
-        //mHideHandler.postDelayed(mHideRunnable, delayMillis);
+        mHideHandler.removeCallbacks(mHideRunnable);
+        mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 }
