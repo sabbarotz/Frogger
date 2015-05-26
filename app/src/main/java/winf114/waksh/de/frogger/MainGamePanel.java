@@ -19,6 +19,8 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
     Paint p = new Paint();
     Color c = new Color();
 
+    // bla
+
 
 public MainGamePanel(Context context) {
     super(context);
