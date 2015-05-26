@@ -21,7 +21,8 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_game"
             android:parentActivityName=".MainActivity"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:screenOrientation = "portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="winf114.waksh.de.frogger.MainActivity" />

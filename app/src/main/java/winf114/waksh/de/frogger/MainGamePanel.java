@@ -19,8 +19,6 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
     Paint p = new Paint();
     Color c = new Color();
 
-    // bla
-
 
 public MainGamePanel(Context context) {
     super(context);
@@ -31,8 +29,8 @@ public MainGamePanel(Context context) {
     // make the GamePanel focusable so it can handle events
     setFocusable(true);
 
-    mainThread = new MainThread(getHolder(), this);
-    frosch = new Frosch(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher), 200, 200,10,10);
+    // mainThread = new MainThread(getHolder(), this);
+    frosch = new Frosch(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher), 400,1400,10,10);
     }
 
     @Override
