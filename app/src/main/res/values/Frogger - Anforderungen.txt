@@ -1,0 +1,19 @@
+Frogger
+
+MUSS-Anforderungen
+  - Nachbildung des Original-Spiels
+  - das Programm soll auf Android laufen
+  - Ziel ist es, mit dem "Frosch" von einer auf die andere Seite des Bildschirms zu hüpfen
+  - Der Frosch kann sich in jede Richtung bewegen
+  - es gibt sich bewegende Hindernisse auf mehreren Spuren, die bei Berührung zum Verlieren führen
+  - es gibt sich bewegende "Inseln" auf mehrere Spuren, die der Frosch zum überqueren eines Flusses benutzen kann
+  - Hindernisse/Inseln bewegen sich in unterschiedlicher Geschwindigkeit
+  - Level lässt sich nur in bestimmten Zielbereichen beenden
+  - Highscore nach Zeit und Level
+  - Spiel speichern
+
+KANN-Anforderungen
+  - verschiedene Schwierigkeiten/Level -> höhere Geschwindigkeit
+  - Steuerung auch mit "Ausrichtungssensor"
+  - Highscore online speichern -> Remote service
+  - Multiplayer
