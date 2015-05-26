@@ -19,6 +19,7 @@ public class MainThread extends Thread {
     public void run() {
         while (isRunning()) {
             //TODO
+            // senseless comentary
 
             Canvas canvas;
 
