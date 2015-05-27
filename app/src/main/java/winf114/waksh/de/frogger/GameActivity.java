@@ -1,66 +1,97 @@
 package winf114.waksh.de.frogger;
 
 import winf114.waksh.de.frogger.util.SystemUiHider;
-
 import android.annotation.TargetApi;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.view.SurfaceHolder;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.SurfaceView;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
+import android.widget.Button;
+import android.widget.TextView;
 
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- *
- * @see SystemUiHider
- */
-public class GameActivity extends Activity {
-    /**
-     * Whether or not the system UI should be auto-hidden after
-     * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
-     */
+public class GameActivity extends Activity implements SurfaceHolder.Callback{
+
+
+    // Felder für die Menue Anzeige und so (vorgegeben)
     private static final boolean AUTO_HIDE = true;
-
-    /**
-     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
-     * user interaction before hiding the system UI.
-     */
     private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
-
-    /**
-     * If set, will toggle the system UI visibility upon interaction. Otherwise,
-     * will show the system UI visibility upon interaction.
-     */
     private static final boolean TOGGLE_ON_CLICK = true;
-
-    /**
-     * The flags to pass to {@link SystemUiHider#getInstance}.
-     */
     private static final int HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION;
-
-    /**
-     * The instance of the {@link SystemUiHider} for this activity.
-     */
     private SystemUiHider mSystemUiHider;
+
+    // Eigene Felder
+    private MainThread mainThread;
+    private Frosch frosch;
+    SurfaceView surfaceView;
+    TextView textView;
+    SurfaceHolder surfaceHolder;
+    Paint p = new Paint();
+    Color c = new Color();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_game);
-        // setupActionBar();
+        // setupActionBar(); //Erzeugt Fehler
+
+        surfaceView = (SurfaceView) findViewById(R.id.surfaceView);
+        surfaceHolder = surfaceView.getHolder();
+        surfaceHolder.addCallback(this);
+
+        mainThread = new MainThread(surfaceHolder, this);
+        frosch = new Frosch(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher), 20,20,10,10);
+
+
+        // 4 Knöpfe und ein Test-Textfeld
+        textView = (TextView) findViewById(R.id.textView1);
+
+        Button linksButton = (Button) findViewById(R.id.links);
+        linksButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                textView.setText("Links");
+            }
+        });
+
+        Button rechtsButton = (Button) findViewById(R.id.rechts);
+        rechtsButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                textView.setText("Rechts");
+            }
+        });
+
+        Button untenButton = (Button) findViewById(R.id.unten);
+        untenButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                textView.setText("Unten");
+            }
+        });
+
+        Button obenButton = (Button) findViewById(R.id.oben);
+        obenButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                textView.setText("Oben");
+            }
+        });
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
-        final View contentView = findViewById(R.id.fullscreen_content);
+        final View contentView = findViewById(R.id.surfaceView);
 
-        // Set up an instance of SystemUiHider to control the system UI for
-        // this activity.
-        mSystemUiHider = SystemUiHider.getInstance(this, contentView, HIDER_FLAGS);
+
+    // Zeugs zum Menue verstecken
+    mSystemUiHider = SystemUiHider.getInstance(this, contentView, HIDER_FLAGS);
         mSystemUiHider.setup();
         mSystemUiHider
                 .setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
@@ -100,7 +131,6 @@ public class GameActivity extends Activity {
                     }
                 });
 
-        // Set up the user interaction to manually show or hide the system UI.
         contentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -111,17 +141,52 @@ public class GameActivity extends Activity {
                 }
             }
         });
-
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
-        //findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
-
-// requesting to turn the title OFF
-
-        // set our MainGamePanel as the View
-        setContentView(new MainGamePanel(this)); //MF 25.5. Zeichenfläche für die GameActivity
     }
+
+
+
+
+    // SurfaceView Methoden
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        mainThread.setRunning(true);
+        mainThread.start();
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        boolean retry = true;
+        while (retry) {
+            try {
+                mainThread.join();
+                retry = false;
+            } catch (InterruptedException e) {
+                // try again shutting down the thread
+            }
+        }
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+    }
+
+
+
+    // render Methode
+
+    protected void onDraw(Canvas canvas) {
+        // überflüssig
+        canvas.drawColor(Color.parseColor("#0e2f44"));
+        p.setColor(0xffffffff);
+        canvas.drawLine(0, 1000, 100, 1000, p);
+        canvas.drawText("Ende", 0, 1000, p);
+        frosch.draw(canvas);
+    }
+
+
+
+
+    // andere Methoden (vorgegeben)
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -133,9 +198,6 @@ public class GameActivity extends Activity {
         delayedHide(100);
     }
 
-    /**
-     * Set up the {@link android.app.ActionBar}, if the API is available.
-     */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void setupActionBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -163,11 +225,6 @@ public class GameActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
     View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -186,11 +243,10 @@ public class GameActivity extends Activity {
         }
     };
 
-    /**
-     * Schedules a call to hide() in [delay] milliseconds, canceling any
-     * previously scheduled calls.
-     */
     private void delayedHide(int delayMillis) {
+
+        // Funktioniert aber nervt ^.^
+
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
