@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 public class GameActivity extends Activity implements SurfaceHolder.Callback{
 
+    // change
 
     // Felder für die Menue Anzeige und so (vorgegeben)
     private static final boolean AUTO_HIDE = true;
