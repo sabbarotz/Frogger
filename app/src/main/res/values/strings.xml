@@ -14,4 +14,8 @@
     <string name="title_activity_game">GameActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="links_button_text">Links</string>
+    <string name="rechts_button_text">Rechts</string>
+    <string name="oben_button_text">Oben</string>
+    <string name="unten_button_text">Unten</string>
 </resources>

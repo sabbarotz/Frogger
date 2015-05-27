@@ -13,13 +13,12 @@ public class MainThread extends Thread {
     private ArrayList<Spielobjekt> spielobjekte = new ArrayList<Spielobjekt>();
 
     private SurfaceHolder surfaceHolder;
-    private MainGamePanel gamePanel;
+    private GameActivity gameActivity;
 
     @Override
     public void run() {
         while (isRunning()) {
             //TODO
-            // senseless comentary
 
             Canvas canvas;
 
@@ -30,8 +29,8 @@ public class MainThread extends Thread {
                     canvas = this.surfaceHolder.lockCanvas();
                     synchronized (surfaceHolder) {
                         // update game state
-                        // draws the canvas on the panel
-                        this.gamePanel.onDraw(canvas); //kein Fehler!
+                        // draws the canvas
+                        this.gameActivity.onDraw(canvas); //kein Fehler!
                     }
                 } finally {
                     // in case of an exception the surface is not left in
@@ -52,10 +51,10 @@ public class MainThread extends Thread {
         this.running = running;
     }
 
-    public MainThread(SurfaceHolder surfaceHolder, MainGamePanel gamePanel) {
+    public MainThread(SurfaceHolder surfaceHolder, GameActivity gameActivity) {
         super();
         this.surfaceHolder = surfaceHolder;
-        this.gamePanel = gamePanel;
+        this.gameActivity = gameActivity;
 
 
     }
