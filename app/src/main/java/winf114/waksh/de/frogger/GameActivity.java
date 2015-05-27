@@ -4,8 +4,6 @@ import winf114.waksh.de.frogger.util.SystemUiHider;
 import android.annotation.TargetApi;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.view.SurfaceHolder;
 import android.app.Activity;
 import android.os.Build;
@@ -34,10 +32,8 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
     private MainThread mainThread;
     private Frosch frosch;
     SurfaceView surfaceView;
-    TextView textView;
     SurfaceHolder surfaceHolder;
-    Paint p = new Paint();
-    Color c = new Color();
+    TextView textView;
 
 
     @Override
@@ -47,7 +43,9 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
         setContentView(R.layout.activity_game);
         // setupActionBar(); //Erzeugt Fehler
 
-        surfaceView = (SurfaceView) findViewById(R.id.surfaceView);
+        final View controlsView = findViewById(R.id.fullscreen_content_controls);
+        final View contentView = findViewById(R.id.surfaceView);
+
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
 
@@ -86,12 +84,9 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
             }
         });
 
-        final View controlsView = findViewById(R.id.fullscreen_content_controls);
-        final View contentView = findViewById(R.id.surfaceView);
 
-
-    // Zeugs zum Menue verstecken
-    mSystemUiHider = SystemUiHider.getInstance(this, contentView, HIDER_FLAGS);
+        // Zeugs zum Menue verstecken
+        mSystemUiHider = SystemUiHider.getInstance(this, contentView, HIDER_FLAGS);
         mSystemUiHider.setup();
         mSystemUiHider
                 .setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
@@ -143,9 +138,6 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
         });
     }
 
-
-
-
     // SurfaceView Methoden
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
@@ -170,20 +162,9 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
     }
 
-
-
-    // render Methode
-
     protected void onDraw(Canvas canvas) {
-        // überflüssig
-        canvas.drawColor(Color.parseColor("#0e2f44"));
-        p.setColor(0xffffffff);
-        canvas.drawLine(0, 1000, 100, 1000, p);
-        canvas.drawText("Ende", 0, 1000, p);
-        frosch.draw(canvas);
+        // TODO
     }
-
-
 
 
     // andere Methoden (vorgegeben)
@@ -244,9 +225,6 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
     };
 
     private void delayedHide(int delayMillis) {
-
-        // Funktioniert aber nervt ^.^
-
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }

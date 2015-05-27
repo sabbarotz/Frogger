@@ -7,27 +7,16 @@
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
 
-    <!--<TextView android:id="@+id/fullscreen_content" android:layout_width="match_parent"
-        android:layout_height="match_parent" android:keepScreenOn="true" android:textColor="#33b5e5"
-         /> -->
-
     <SurfaceView
         android:id="@+id/surfaceView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight = "1"
+        android:keepScreenOn="true"
         android:background="#0e2f44" />
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#cd3700"
-        android:text="Hallo Welt!" ></TextView>
-
     <ImageView
-        android:id="@+id/frosch"
-        android:src="@drawable/ic_launcher"
+        android:id="@+id/hintergrund"
+        android:src="@drawable/hintergrund"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
@@ -68,9 +57,13 @@
 
         </LinearLayout>
 
-
-
-
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#cd3700"
+            android:text="Hallo Welt!"
+            android:layout_gravity="center"></TextView>
 
 
     </FrameLayout>
