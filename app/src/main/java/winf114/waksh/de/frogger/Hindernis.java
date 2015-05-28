@@ -1,5 +1,7 @@
 package winf114.waksh.de.frogger;
 
+import android.graphics.Canvas;
+
 /**
  * Created by bhaetsch on 25.05.2015.
  */

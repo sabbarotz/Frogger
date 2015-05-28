@@ -11,7 +11,8 @@
         android:id="@+id/surfaceView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:keepScreenOn="true" />
+        android:keepScreenOn="true"
+        android:fitsSystemWindows="true"/>
 
 
     <!-- This FrameLayout insets its children based on system windows using
@@ -23,6 +24,7 @@
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
             android:background="#0099cc" android:orientation="horizontal"
+            android:fitsSystemWindows="true"
             tools:ignore="UselessParent">
 
             <Button

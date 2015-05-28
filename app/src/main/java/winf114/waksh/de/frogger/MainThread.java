@@ -10,7 +10,7 @@ import android.graphics.Canvas;
  */
 public class MainThread extends Thread {
     private boolean running;
-    private ArrayList<Spielobjekt> spielobjekte = new ArrayList<Spielobjekt>();
+    ArrayList<Spielobjekt> spielobjekte = new ArrayList<Spielobjekt>();
 
     private SurfaceHolder surfaceHolder;
     private GameActivity gameActivity;
@@ -28,6 +28,11 @@ public class MainThread extends Thread {
                     canvas = this.surfaceHolder.lockCanvas();
                     synchronized (surfaceHolder) {
                         // update game state
+                        for (Spielobjekt s : spielobjekte){
+                            s.move();
+                        }
+
+
                         // draws the canvas
                         this.gameActivity.onDraw(canvas);
                     }
