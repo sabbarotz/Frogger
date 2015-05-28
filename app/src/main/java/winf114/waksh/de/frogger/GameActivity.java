@@ -33,8 +33,6 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-
         setContentView(R.layout.activity_game);
 
         surfaceView = (SurfaceView) findViewById(R.id.surfaceView);
@@ -99,6 +97,30 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
                 // try again shutting down the thread
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        mainThread.setRunning(false);
+        super.onBackPressed();
+    }
+
+    @Override
+    public void onPause() {
+        mainThread.setRunning(false);
+        super.onPause();
+    }
+
+    @Override
+    public void onStop(){
+        mainThread.setRunning(false);
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        mainThread.setRunning(false);
+        super.onDestroy();
     }
 
     @Override
