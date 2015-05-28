@@ -15,13 +15,6 @@ import android.graphics.Color;
 
 public class GameActivity extends Activity implements SurfaceHolder.Callback{
 
-    // Felder für die Menue Anzeige und so (vorgegeben)
-    private static final boolean AUTO_HIDE = true;
-    private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
-    private static final boolean TOGGLE_ON_CLICK = true;
-    private static final int HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION;
-
-    // Eigene Felder
     private MainThread mainThread;
     private Frosch frosch;
     SurfaceView surfaceView;
@@ -36,6 +29,14 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
 
 
         setContentView(R.layout.activity_game);
+
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 
         surfaceView = (SurfaceView) findViewById(R.id.surfaceView);
         surfaceHolder = surfaceView.getHolder();
@@ -80,6 +81,7 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
             }
         });
     }
+
 
     // SurfaceView Methoden
     @Override
