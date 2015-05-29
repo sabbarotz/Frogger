@@ -10,6 +10,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.view.ViewDebug;
+import android.util.Log;
+import android.graphics.Point;
+import android.view.Display;
 
 
 public class GameActivity extends Activity implements SurfaceHolder.Callback{
@@ -25,8 +29,6 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
     int startPositionX;
     int startPositionY;
 
-    private MainThread mainThread;
-
     Frosch frosch;
     private Hindernis auto;
     private Hindernis lkw;
@@ -34,10 +36,14 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
     private Hindernis krad;
     private Hindernis auto3;
 
+    TextView textView;
     private Hintergrund hintergrund;
+
+    private MainThread mainThread;
     SurfaceView surfaceView;
     SurfaceHolder surfaceHolder;
-    TextView textView;
+    boolean isSurfaceCreated = false;
+
 
 
 
@@ -48,13 +54,7 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
 
         setContentView(R.layout.activity_game);
 
-        View decorView = getWindow().getDecorView();
-        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+
 
         surfaceView = (SurfaceView) findViewById(R.id.surfaceView);
         surfaceHolder = surfaceView.getHolder();
@@ -63,52 +63,15 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
         spielFlaeche = new Rect(0,0,0,0);
         mainThread = new MainThread(surfaceHolder, this);
 
-        // 4 Knöpfe und ein Test-Textfeld
 
-        textView = (TextView) findViewById(R.id.textView1);
-
-        Button linksButton = (Button) findViewById(R.id.links);
-        linksButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                textView.setText("Links");
-                frosch.moved = true;
-                frosch.r = richtung.links;
-            }
-        });
-
-        Button rechtsButton = (Button) findViewById(R.id.rechts);
-        rechtsButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                textView.setText("Rechts");
-                frosch.moved = true;
-                frosch.r = richtung.rechts;
-            }
-        });
-
-        Button untenButton = (Button) findViewById(R.id.unten);
-        untenButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                textView.setText("Unten");
-                frosch.moved = true;
-                frosch.r = richtung.zurueck;
-            }
-        });
-
-        Button obenButton = (Button) findViewById(R.id.oben);
-        obenButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                textView.setText("Oben");
-                frosch.moved = true;
-                frosch.r = richtung.vor;
-            }
-        });
     }
 
     // SurfaceView Methoden
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        mainThread.setRunning(true);
-        mainThread.start();
+        Log.d("GameActivity", "surfaceCreated");
+        isSurfaceCreated = true;
+
     }
 
     @Override
@@ -160,6 +123,60 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
     }
 
     @Override
+    public void onResume() {
+        Log.d("GameActivity", "onResume");
+
+        super.onResume();
+
+        if (!mainThread.isPaused()) {
+            Log.d("GameActivity", "mainThread.start");
+            mainThread.start();
+        }
+        mainThread.setRunning(true);
+        mainThread.setPaused(false);
+
+        // 4 Knöpfe und ein Test-Textfeld
+
+        textView = (TextView) findViewById(R.id.textView1);
+
+        Button linksButton = (Button) findViewById(R.id.links);
+        linksButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                textView.setText("Links");
+                frosch.moved = true;
+                frosch.r = richtung.links;
+            }
+        });
+
+        Button rechtsButton = (Button) findViewById(R.id.rechts);
+        rechtsButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                textView.setText("Rechts");
+                frosch.moved = true;
+                frosch.r = richtung.rechts;
+            }
+        });
+
+        Button untenButton = (Button) findViewById(R.id.unten);
+        untenButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                textView.setText("Unten");
+                frosch.moved = true;
+                frosch.r = richtung.zurueck;
+            }
+        });
+
+        Button obenButton = (Button) findViewById(R.id.oben);
+        obenButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                textView.setText("Oben");
+                frosch.moved = true;
+                frosch.r = richtung.vor;
+            }
+        });
+    }
+
+    @Override
     public void onBackPressed() {
         mainThread.setRunning(false);
         super.onBackPressed();
@@ -167,20 +184,37 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
 
     @Override
     public void onPause() {
-        mainThread.setRunning(false);
+        Log.d("GameActivity", "onPause");
         super.onPause();
+        Log.d("GameActivity", "1");
+        mainThread.setPaused(true);
+        Log.d("GameActivity", "2");
+        mainThread.setRunning(false);
+        Log.d("GameActivity", "3");
     }
 
     @Override
+    public void onRestart() {
+        Log.d("GameActivity", "onRestart");
+        super.onRestart();
+    }
+
+    @Override
+    public void onStart() {
+        Log.d("GameActivity", "onStart");
+        super.onStart();
+    }
+    @Override
     public void onStop(){
-        mainThread.setRunning(false);
+        Log.d("GameActivity", "onStop");
         super.onStop();
     }
 
     @Override
     public void onDestroy() {
-        mainThread.setRunning(false);
+        Log.d("GameActivity", "onDestroy");
         super.onDestroy();
+        mainThread.setRunning(false);
     }
 
     protected void onDraw(Canvas canvas) {
