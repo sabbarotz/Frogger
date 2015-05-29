@@ -5,6 +5,7 @@ import android.view.SurfaceHolder;
 import android.graphics.Canvas;
 
 
+
 /**
  * Created by bhaetsch on 25.05.2015.
  */
@@ -14,6 +15,8 @@ public class MainThread extends Thread {
 
     private SurfaceHolder surfaceHolder;
     private GameActivity gameActivity;
+
+
 
     @Override
     public void run() {
@@ -28,9 +31,40 @@ public class MainThread extends Thread {
                     canvas = this.surfaceHolder.lockCanvas();
                     synchronized (surfaceHolder) {
                         // update game state
+
+
+
+
                         for (Spielobjekt s : spielobjekte){
                             s.move();
+
                         }
+
+                        // TODO die ArrayList in GameActivity?? und pass
+                        // Kol Spielobjekt mit Rand
+                        // byReference byValue !!!
+                        for (Spielobjekt s : spielobjekte){
+                            if (s instanceof Hindernis) {
+                                if (!s.kollidiertMit(s.zeichenBereich)) {
+                                    ((Hindernis) s).erscheintWieder();
+                                }
+                            }
+                        }
+                        // Kol Frosch mit Auto
+                        for (Spielobjekt s : spielobjekte){
+                            if (s instanceof Hindernis) {
+                                if (gameActivity.frosch.kollidiertMit(s.zeichenBereich)) {
+                                    gameActivity.frosch.sterben();
+
+                                }
+                            }
+                        }
+                        // Kol Frosch mit Rand
+                        if (!gameActivity.frosch.kollidiertMit(gameActivity.spielFlaeche)) {
+                            gameActivity.frosch.sterben();
+                        }
+
+
 
 
                         // draws the canvas
@@ -59,7 +93,5 @@ public class MainThread extends Thread {
         super();
         this.surfaceHolder = surfaceHolder;
         this.gameActivity = gameActivity;
-
-
     }
 }
