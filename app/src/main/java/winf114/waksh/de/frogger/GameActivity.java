@@ -10,6 +10,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.util.Log;
+
+import java.util.ArrayList;
 
 
 public class GameActivity extends Activity implements SurfaceHolder.Callback{
@@ -17,27 +20,43 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
     final int LANE_HOEHE_PROZENT = 6;       //Höhe einer "Lane" im Spiel in % des Screens
     final int OBJEKT_HOEHE_PROZENT = 80;    //Höhe des Objekts in % der Lane Hoehe
 
-    private int lanePixelHoehe;             //Höhe einer "Lane" im Spiel in Pixeln
+    int lanePixelHoehe;             //Höhe einer "Lane" im Spiel in Pixeln
     private int objektPixelHoehe;           //Höhe der Objekt (eg.Frosch) im Spiel in Pixeln
     Rect spielFlaeche;
     int lanePadding;
     int froschbreite;
+    int froschSpeed;
     int startPositionX;
     int startPositionY;
 
-    private MainThread mainThread;
-
     Frosch frosch;
-    private Hindernis auto;
-    private Hindernis lkw;
-    private Hindernis auto2;
-    private Hindernis krad;
-    private Hindernis auto3;
+    private Hindernis auto01;
+    private Hindernis auto02;
+    private Hindernis auto03;
+    private Hindernis auto04;
+    private Hindernis auto05;
+    private Hindernis baum01;
+    private Hindernis baum02;
+    private Hindernis baum03;
+    private Hindernis baum04;
+    private Hindernis baum05;
+    private Ziel ziel01;
+    private Ziel ziel02;
+    private Ziel ziel03;
+    private Ziel ziel04;
+    private Ziel ziel05;
 
+    protected ArrayList<Spielobjekt> spielobjekte;
+
+
+    TextView textView;
     private Hintergrund hintergrund;
+
+    private MainThread mainThread;
     SurfaceView surfaceView;
     SurfaceHolder surfaceHolder;
-    TextView textView;
+    boolean isSurfaceCreated = false;
+
 
 
 
@@ -61,54 +80,18 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
         surfaceHolder.addCallback(this);
 
         spielFlaeche = new Rect(0,0,0,0);
+
         mainThread = new MainThread(surfaceHolder, this);
 
-        // 4 Knöpfe und ein Test-Textfeld
 
-        textView = (TextView) findViewById(R.id.textView1);
-
-        Button linksButton = (Button) findViewById(R.id.links);
-        linksButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                textView.setText("Links");
-                frosch.moved = true;
-                frosch.r = richtung.links;
-            }
-        });
-
-        Button rechtsButton = (Button) findViewById(R.id.rechts);
-        rechtsButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                textView.setText("Rechts");
-                frosch.moved = true;
-                frosch.r = richtung.rechts;
-            }
-        });
-
-        Button untenButton = (Button) findViewById(R.id.unten);
-        untenButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                textView.setText("Unten");
-                frosch.moved = true;
-                frosch.r = richtung.zurueck;
-            }
-        });
-
-        Button obenButton = (Button) findViewById(R.id.oben);
-        obenButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                textView.setText("Oben");
-                frosch.moved = true;
-                frosch.r = richtung.vor;
-            }
-        });
     }
 
     // SurfaceView Methoden
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        mainThread.setRunning(true);
-        mainThread.start();
+        Log.d("GameActivity", "surfaceCreated");
+        isSurfaceCreated = true;
+
     }
 
     @Override
@@ -127,36 +110,96 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
-        erstelleSpielParameter(width,height);
+        erstelleSpielParameter(width, height);
 
         String breiteSTR = Integer.toString(width);
         String hoeheSTR = Integer.toString(height);
 
-        textView.setText(hoeheSTR + ":" + breiteSTR);
+        textView.setText(hoeheSTR + ":" + breiteSTR + ":" + froschbreite + ":" + froschSpeed);
 
         hintergrund = new Hintergrund(width, lanePixelHoehe);
 
+        spielobjekte = new ArrayList<Spielobjekt>();
 
-        // xx = XX(linker rand, lane+(zentriert in lane),breiteObjekt,hoeheObjekt, geschw.)
-        auto = new Hindernis(-200, lanePixelHoehe * 7 + lanePadding, 200, objektPixelHoehe, 4, Color.parseColor("#750707"));
-        lkw = new Hindernis(-400, lanePixelHoehe * 8 + lanePadding, 400, objektPixelHoehe, 2, Color.parseColor("#750707"));
-        auto2 = new Hindernis(-250, lanePixelHoehe * 9 + lanePadding, 250, objektPixelHoehe, 3, Color.parseColor("#750707"));
-        krad = new Hindernis(-100, lanePixelHoehe * 10 + lanePadding, 100, objektPixelHoehe, 5, Color.parseColor("#750707"));
-        auto3 = new Hindernis(-150, lanePixelHoehe * 11 + lanePadding, 150, objektPixelHoehe, 4, Color.parseColor("#750707"));
+        spielobjekte.add(frosch = new Frosch(startPositionX, startPositionY, froschbreite , objektPixelHoehe, (lanePixelHoehe - objektPixelHoehe),froschSpeed, Color.parseColor("#9db426"), this));
 
+
+        // xx = XX(linker rand, lane+(zentriert in lane),breiteObjekt,hoeheObjekt, geschw., farbe)
+        spielobjekte.add(baum01 = new Hindernis(-200, lanePixelHoehe * 1 + lanePadding, 200, objektPixelHoehe, 4, Color.parseColor("#c19132"), this));
+        spielobjekte.add(baum02 = new Hindernis(-400, lanePixelHoehe * 2 + lanePadding, 400, objektPixelHoehe, -2, Color.parseColor("#c19132"), this));
+        spielobjekte.add(baum03 = new Hindernis(-250, lanePixelHoehe * 3 + lanePadding, 250, objektPixelHoehe, 3, Color.parseColor("#c19132"), this));
+        spielobjekte.add(baum04 = new Hindernis(-100, lanePixelHoehe * 4 + lanePadding, 100, objektPixelHoehe, -5, Color.parseColor("#c19132"), this));
+        spielobjekte.add(baum05 = new Hindernis(-150, lanePixelHoehe * 5 + lanePadding, 400, objektPixelHoehe, 2, Color.parseColor("#c19132"), this));
+
+        spielobjekte.add(auto01 = new Hindernis(-200, lanePixelHoehe * 7 + lanePadding, 200, objektPixelHoehe, 4, Color.parseColor("#750707"), this));
+        spielobjekte.add(auto02 = new Hindernis(-400, lanePixelHoehe * 8 + lanePadding, 400, objektPixelHoehe, -2, Color.parseColor("#750707"), this));
+        spielobjekte.add(auto03 = new Hindernis(-250, lanePixelHoehe * 9 + lanePadding, 250, objektPixelHoehe, 3, Color.parseColor("#750707"), this));
+        spielobjekte.add(auto04 = new Hindernis(-100, lanePixelHoehe * 10 + lanePadding, 100, objektPixelHoehe, -5, Color.parseColor("#750707"), this));
+        spielobjekte.add(auto05 = new Hindernis(-150, lanePixelHoehe * 11 + lanePadding, 150, objektPixelHoehe, 4, Color.parseColor("#750707"), this));
+
+        spielobjekte.add(ziel01 = new Ziel(startPositionX, 0, froschbreite, lanePixelHoehe, Color.parseColor("#000000")));
+        spielobjekte.add(ziel02 = new Ziel(startPositionX + (3 * froschbreite), 0, froschbreite, lanePixelHoehe, Color.parseColor("#000000")));
+        spielobjekte.add(ziel03 = new Ziel(startPositionX - (3 * froschbreite), 0, froschbreite, lanePixelHoehe, Color.parseColor("#000000")));
+        spielobjekte.add(ziel04 = new Ziel(startPositionX + (6 * froschbreite), 0, froschbreite, lanePixelHoehe, Color.parseColor("#000000")));
+        spielobjekte.add(ziel05 = new Ziel(startPositionX - (6 * froschbreite), 0, froschbreite, lanePixelHoehe, Color.parseColor("#000000")));
 
         // frosch geschwindigkeit abhaengig von lanehoehe
 
-        frosch = new Frosch(startPositionX, startPositionY, froschbreite , objektPixelHoehe, (lanePixelHoehe - objektPixelHoehe),froschbreite/2, Color.parseColor("#9db426"), this);
 
-        mainThread.spielobjekte.add(frosch);
-        mainThread.spielobjekte.add(auto);
-        mainThread.spielobjekte.add(lkw);
-        mainThread.spielobjekte.add(auto2);
-        mainThread.spielobjekte.add(krad);
-        mainThread.spielobjekte.add(auto3);
+    }
 
+    @Override
+    public void onResume() {
+        Log.d("GameActivity", "onResume");
 
+        super.onResume();
+
+        if (!mainThread.isPaused()) {
+            Log.d("GameActivity", "mainThread.start");
+            mainThread.start();
+        }
+        mainThread.setRunning(true);
+        mainThread.setPaused(false);
+
+        // 4 Knöpfe und ein Test-Textfeld
+
+        textView = (TextView) findViewById(R.id.textView1);
+
+        Button linksButton = (Button) findViewById(R.id.links);
+        linksButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                textView.setText("Links");
+                frosch.setMoved();
+                frosch.setRichtung(richtung.links);
+            }
+        });
+
+        Button rechtsButton = (Button) findViewById(R.id.rechts);
+        rechtsButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                textView.setText("Rechts");
+                frosch.setMoved();
+                frosch.setRichtung(richtung.rechts);
+            }
+        });
+
+        Button untenButton = (Button) findViewById(R.id.unten);
+        untenButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                textView.setText("Unten");
+                frosch.setMoved();
+                frosch.setRichtung(richtung.zurueck);
+            }
+        });
+
+        Button obenButton = (Button) findViewById(R.id.oben);
+        obenButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                textView.setText("Oben");
+                frosch.setMoved();
+                frosch.setRichtung(richtung.vor);
+            }
+        });
     }
 
     @Override
@@ -167,33 +210,45 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
 
     @Override
     public void onPause() {
-        mainThread.setRunning(false);
+        Log.d("GameActivity", "onPause");
         super.onPause();
+        Log.d("GameActivity", "1");
+        mainThread.setPaused(true);
+        Log.d("GameActivity", "2");
+        mainThread.setRunning(false);
+        Log.d("GameActivity", "3");
     }
 
     @Override
+    public void onRestart() {
+        Log.d("GameActivity", "onRestart");
+        super.onRestart();
+    }
+
+    @Override
+    public void onStart() {
+        Log.d("GameActivity", "onStart");
+        super.onStart();
+    }
+    @Override
     public void onStop(){
-        mainThread.setRunning(false);
+        Log.d("GameActivity", "onStop");
         super.onStop();
     }
 
     @Override
     public void onDestroy() {
-        mainThread.setRunning(false);
+        Log.d("GameActivity", "onDestroy");
         super.onDestroy();
+        mainThread.setRunning(false);
     }
 
     protected void onDraw(Canvas canvas) {
         canvas.drawColor(Color.BLACK);
         hintergrund.draw(canvas);
-        frosch.draw(canvas);
-        auto.draw(canvas);
-        lkw.draw(canvas);
-        auto2.draw(canvas);
-        krad.draw(canvas);
-        auto3.draw(canvas);
-
-
+        for(Spielobjekt s : spielobjekte){
+            s.draw(canvas);
+        }
     }
 
     public Rect getSpielFlaeche(){
@@ -205,7 +260,8 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
         this.objektPixelHoehe = lanePixelHoehe * OBJEKT_HOEHE_PROZENT / 100;
         lanePadding = (lanePixelHoehe - objektPixelHoehe)/2; //zentriert die Obj in den Lanes
         spielFlaeche.set(0,0,width,height * LANE_HOEHE_PROZENT / 100 * 13);
-        froschbreite = width / 13;
+        froschbreite = width / 15;
+        froschSpeed = froschbreite;
         startPositionX = width / 2 - (froschbreite/2);
         startPositionY = lanePixelHoehe * 12 + lanePadding;
     }

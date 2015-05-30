@@ -1,8 +1,5 @@
 package winf114.waksh.de.frogger;
 
-import android.graphics.Canvas;
-import android.graphics.Rect;
-
 /**
  * Created by bhaetsch on 25.05.2015.
  */
@@ -10,9 +7,10 @@ public class Frosch extends Spielobjekt{
 
     int geschwindigkeitVertikal;
     int geschwindigkeitHorizontal;
-    boolean moved;
-    richtung r;
-    GameActivity gameActivity;
+    private boolean moved;
+    private richtung r;
+    private GameActivity gameActivity;
+    boolean imWasser = false;
 
 
     public Frosch(int x, int y, int breite, int hoehe, int geschwindigkeitVertikal, int geschwindigkeitHorizontal,int farbe, GameActivity gameActivity) {
@@ -21,12 +19,12 @@ public class Frosch extends Spielobjekt{
         this.gameActivity = gameActivity;
         this.geschwindigkeitHorizontal = geschwindigkeitHorizontal;
         this.geschwindigkeitVertikal = geschwindigkeitVertikal;
-        setZeichenBereich();
         moved = false;
+
     }
 
     public void move(){
-        if(moved == true){
+        if(moved){
             move(r);
         }
     }
@@ -34,16 +32,23 @@ public class Frosch extends Spielobjekt{
     public void move(richtung r) {
         switch(r){
             case vor:
-                this.setY(this.getY()-this.getHoehe() - geschwindigkeitVertikal);
+                this.setY(this.getY() - this.getHoehe() - geschwindigkeitVertikal);
+                if(this.getY() <= gameActivity.lanePixelHoehe * 6){
+                    imWasser = true;
+                }
                 break;
             case zurueck:
                 this.setY(this.getY() + this.getHoehe() + geschwindigkeitVertikal);
+                if(this.getY() > gameActivity.lanePixelHoehe * 5){
+                    imWasser = false;
+                }
                 break;
+            //TODO int casten!?
             case links:
-                this.setX(this.getX()-this.getBreite() - geschwindigkeitHorizontal);
+                this.setX(this.getX()- geschwindigkeitHorizontal);
                 break;
             case rechts:
-                this.setX(this.getX()+this.getBreite() + geschwindigkeitHorizontal);
+                this.setX(this.getX() + geschwindigkeitHorizontal);
                 break;
         }
         setZeichenBereich();
@@ -53,15 +58,15 @@ public class Frosch extends Spielobjekt{
     public void sterben(){
         this.setX(gameActivity.startPositionX);
         this.setY(gameActivity.startPositionY);
+        this.imWasser = false;
         this.setZeichenBereich();
     }
 
-    public void draw(Canvas canvas) {
-        canvas.drawRect(zeichenBereich, zeichenStift);
+    public void setMoved(){
+        this.moved = true;
     }
 
-
-
-
-
+    public void setRichtung(richtung r) {
+        this.r = r;
+    }
 }
