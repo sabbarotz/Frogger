@@ -16,6 +16,8 @@ public class Hintergrund {
     private Rect pausenBereich;
     private Rect strassenBereich;
     private Rect startBereich;
+    private float lanehoehe;
+    private float screenbreite;
 
     // die Farben der Bereiche
     private Paint zielBereichFarbe = new Paint();
@@ -23,11 +25,14 @@ public class Hintergrund {
     private Paint pausenBereichFarbe = new Paint();
     private Paint strassenBereichFarbe = new Paint();
     private Paint startBereichFarbe = new Paint();
+    private Paint strassenMarkierungFarbe = new Paint();
 
 
 
     public Hintergrund(int breite, int hoehe) {
 
+        this.lanehoehe = hoehe;
+        this.screenbreite = breite;
         // definiert die Größe der Bereiche
         // Rect(left,top,right,bottom)
         zielBereich = new Rect(0,0,breite,hoehe);
@@ -48,6 +53,7 @@ public class Hintergrund {
         pausenBereichFarbe.setColor(Color.parseColor("#2f360b"));
         strassenBereichFarbe.setColor(Color.parseColor("#313131"));
         startBereichFarbe.setColor(Color.parseColor("#2f360b"));
+        strassenMarkierungFarbe.setColor(Color.parseColor("#ffffff"));
     }
 
     public void draw(Canvas canvas) {
@@ -58,5 +64,9 @@ public class Hintergrund {
         canvas.drawRect(pausenBereich, pausenBereichFarbe);
         canvas.drawRect(strassenBereich, strassenBereichFarbe);
         canvas.drawRect(startBereich, startBereichFarbe);
+        canvas.drawLine(0, lanehoehe * 8, screenbreite, lanehoehe * 8, strassenMarkierungFarbe);
+        canvas.drawLine(0,lanehoehe * 9 ,screenbreite,lanehoehe * 9,strassenMarkierungFarbe);
+        canvas.drawLine(0,lanehoehe * 10 ,screenbreite,lanehoehe * 10,strassenMarkierungFarbe);
+        canvas.drawLine(0,lanehoehe * 11 ,screenbreite,lanehoehe * 11,strassenMarkierungFarbe);
     }
 }

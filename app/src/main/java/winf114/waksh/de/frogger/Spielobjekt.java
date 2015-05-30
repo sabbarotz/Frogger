@@ -13,8 +13,8 @@ public abstract class Spielobjekt {
     private int y;                  //vertikale Position der linken oberen Ecke
     private int breite;             //in Pixeln
     private int hoehe;              //in Pixeln
-    Paint zeichenStift;
-    Rect zeichenBereich;
+    private Paint zeichenStift;
+    private Rect zeichenBereich;
 
 
     public Spielobjekt(int x, int y, int breite, int hoehe, int farbe) {
@@ -23,12 +23,12 @@ public abstract class Spielobjekt {
         this.breite = breite;
         this.hoehe = hoehe;
 
-        zeichenBereich = new Rect(0,0,0,0);
-        zeichenStift = new Paint();
-        zeichenStift.setColor(farbe);
+        this.zeichenBereich = new Rect(0,0,0,0);
+        this.zeichenStift = new Paint();
+        this.zeichenStift.setColor(farbe);
+
+        this.setZeichenBereich();
     }
-
-
 
     public int getX() {
         return x;
@@ -66,13 +66,20 @@ public abstract class Spielobjekt {
         zeichenBereich.set(x, y, x + breite, y + hoehe);
     }
 
+    public Rect getZeichenBereich() {
+        return zeichenBereich;
+    }
+
     public boolean kollidiertMit(Rect r){
-        if(this.zeichenBereich.intersect(r)){
+        if(this.zeichenBereich.intersects(this.zeichenBereich, r)){
             return true;
         }
         return false;
     }
 
     abstract void move();
-    abstract void draw(Canvas canvas);
+
+    public void draw(Canvas canvas){
+        canvas.drawRect(zeichenBereich, zeichenStift);
+    }
 }

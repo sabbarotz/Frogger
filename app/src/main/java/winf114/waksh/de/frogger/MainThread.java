@@ -11,15 +11,18 @@ import android.util.Log;
  * Created by bhaetsch on 25.05.2015.
  */
 public class MainThread extends Thread {
+
     private volatile boolean running = false;
     private volatile boolean paused = false;
-
-    ArrayList<Spielobjekt> spielobjekte = new ArrayList<Spielobjekt>();
-
     private SurfaceHolder surfaceHolder;
     private GameActivity gameActivity;
     private Canvas canvas;
 
+    public MainThread(SurfaceHolder surfaceHolder, GameActivity gameActivity) {
+        super();
+        this.surfaceHolder = surfaceHolder;
+        this.gameActivity = gameActivity;
+    }
 
     @Override
     public void run() {
@@ -48,27 +51,31 @@ public class MainThread extends Thread {
                                 // update game state
 
 
-                                for (Spielobjekt s : spielobjekte) {
+                                for (Spielobjekt s : gameActivity.spielobjekte) {
                                     s.move();
 
                                 }
 
-                                // TODO die ArrayList in GameActivity?? und pass
                                 // Kol Spielobjekt mit Rand
-                                // byReference byValue !!!
-                                for (Spielobjekt s : spielobjekte) {
+                                for (Spielobjekt s : gameActivity.spielobjekte) {
                                     if (s instanceof Hindernis) {
-                                        if (!s.kollidiertMit(s.zeichenBereich)) {
+                                        if (!s.kollidiertMit(gameActivity.spielFlaeche)) {
                                             ((Hindernis) s).erscheintWieder();
                                         }
                                     }
                                 }
-                                // Kol Frosch mit Auto
-                                for (Spielobjekt s : spielobjekte) {
-                                    if (s instanceof Hindernis) {
-                                        if (gameActivity.frosch.kollidiertMit(s.zeichenBereich)) {
-                                            gameActivity.frosch.sterben();
 
+                                // Kol Frosch mit Hindernis
+                                for (Spielobjekt s : gameActivity.spielobjekte) {
+                                    if (s instanceof Hindernis) {
+                                        if (!gameActivity.frosch.imWasser)
+                                            if (gameActivity.frosch.kollidiertMit(s.getZeichenBereich())) {
+                                                gameActivity.frosch.sterben();
+                                            }
+                                        else if (gameActivity.frosch.imWasser){
+                                            if (!gameActivity.frosch.kollidiertMit(s.getZeichenBereich())) {
+                                                gameActivity.frosch.sterben();
+                                            }
                                         }
                                     }
                                 }
@@ -110,9 +117,5 @@ public class MainThread extends Thread {
         this.running = running;
     }
 
-    public MainThread(SurfaceHolder surfaceHolder, GameActivity gameActivity) {
-        super();
-        this.surfaceHolder = surfaceHolder;
-        this.gameActivity = gameActivity;
-    }
+
 }
