@@ -70,6 +70,10 @@ public abstract class Spielobjekt {
         return zeichenBereich;
     }
 
+    public Paint getZeichenStift() {
+        return zeichenStift;
+    }
+
     public boolean kollidiertMit(Rect r){
         if(this.zeichenBereich.intersects(this.zeichenBereich, r)){
             return true;

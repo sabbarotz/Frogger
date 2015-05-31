@@ -42,14 +42,6 @@
                 android:text="@string/unten_button_text"
                 android:layout_gravity="left|center" />
 
-            <TextView
-                android:id="@+id/textView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="#cd3700"
-                android:text="Hallo Welt!"
-                android:layout_gravity="center"></TextView>
-
             <Button
                 android:id="@+id/links"
                 android:layout_width="wrap_content"
@@ -63,9 +55,6 @@
                 android:text="@string/rechts_button_text" />
 
         </GridLayout>
-
-
-
 
     </FrameLayout>
 

@@ -11,30 +11,39 @@ import android.widget.TextView;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.Log;
+import android.graphics.Paint;
 
 import java.util.ArrayList;
 
 
 public class GameActivity extends Activity implements SurfaceHolder.Callback{
 
-    final int LANE_HOEHE_PROZENT = 6;       //Höhe einer "Lane" im Spiel in % des Screens
+    final int LANE_HOEHE_PROZENT = 5;       //Höhe einer "Lane" im Spiel in % des Screens
     final int OBJEKT_HOEHE_PROZENT = 80;    //Höhe des Objekts in % der Lane Hoehe
 
     int lanePixelHoehe;             //Höhe einer "Lane" im Spiel in Pixeln
     private int objektPixelHoehe;           //Höhe der Objekt (eg.Frosch) im Spiel in Pixeln
     Rect spielFlaeche;
     int lanePadding;
-    int froschbreite;
-    int froschSpeed;
+    int froschBreite;
+    int froschGeschwX;
+    int froschGeschwY;
     int startPositionX;
     int startPositionY;
+    int smallTextSize;
+    int largeTextSize;
+
+    int punkte;
+    int tode;
 
     Frosch frosch;
+    Frosch deadFrosch;
     private Hindernis auto01;
     private Hindernis auto02;
     private Hindernis auto03;
     private Hindernis auto04;
     private Hindernis auto05;
+    private Hindernis auto06;
     private Hindernis baum01;
     private Hindernis baum02;
     private Hindernis baum03;
@@ -49,7 +58,17 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
     protected ArrayList<Spielobjekt> spielobjekte;
 
 
-    TextView textView;
+    private long renderTimeBegin;
+    private long renderTime;
+    private long renderTimeMax;
+    private long renderTimeAvg;
+    private String renderTimeAvgStr;
+    private long renderTimeSum;
+    private int renderCycles;
+
+    String testText;
+    private Paint textFarbe;
+
     private Hintergrund hintergrund;
 
     private MainThread mainThread;
@@ -80,6 +99,13 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
         surfaceHolder.addCallback(this);
 
         spielFlaeche = new Rect(0,0,0,0);
+        punkte = 0;
+        tode = 0;
+        testText = "";
+        long timeDiffOld = 0;
+
+        textFarbe = new Paint();
+        textFarbe.setColor(Color.WHITE);
 
         mainThread = new MainThread(surfaceHolder, this);
 
@@ -112,19 +138,13 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
 
         erstelleSpielParameter(width, height);
 
-        String breiteSTR = Integer.toString(width);
-        String hoeheSTR = Integer.toString(height);
-
-        textView.setText(hoeheSTR + ":" + breiteSTR + ":" + froschbreite + ":" + froschSpeed);
-
+        testText = height + ":" + width + ":" + froschBreite + ":" + froschGeschwX;
         hintergrund = new Hintergrund(width, lanePixelHoehe);
-
         spielobjekte = new ArrayList<Spielobjekt>();
 
-        spielobjekte.add(frosch = new Frosch(startPositionX, startPositionY, froschbreite , objektPixelHoehe, (lanePixelHoehe - objektPixelHoehe),froschSpeed, Color.parseColor("#9db426"), this));
+        deadFrosch = new Frosch(0, 0, froschBreite, objektPixelHoehe, 0, 0, Color.parseColor("#ff0000"), this);;
 
-
-        // xx = XX(linker rand, lane+(zentriert in lane),breiteObjekt,hoeheObjekt, geschw., farbe)
+        // xx = new XX(linker rand, lane+(zentriert in lane),breiteObjekt,hoeheObjekt, geschw., farbe)
         spielobjekte.add(baum01 = new Hindernis(-200, lanePixelHoehe * 1 + lanePadding, 200, objektPixelHoehe, 4, Color.parseColor("#c19132"), this));
         spielobjekte.add(baum02 = new Hindernis(-400, lanePixelHoehe * 2 + lanePadding, 400, objektPixelHoehe, -2, Color.parseColor("#c19132"), this));
         spielobjekte.add(baum03 = new Hindernis(-250, lanePixelHoehe * 3 + lanePadding, 250, objektPixelHoehe, 3, Color.parseColor("#c19132"), this));
@@ -135,17 +155,16 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
         spielobjekte.add(auto02 = new Hindernis(-400, lanePixelHoehe * 8 + lanePadding, 400, objektPixelHoehe, -2, Color.parseColor("#750707"), this));
         spielobjekte.add(auto03 = new Hindernis(-250, lanePixelHoehe * 9 + lanePadding, 250, objektPixelHoehe, 3, Color.parseColor("#750707"), this));
         spielobjekte.add(auto04 = new Hindernis(-100, lanePixelHoehe * 10 + lanePadding, 100, objektPixelHoehe, -5, Color.parseColor("#750707"), this));
-        spielobjekte.add(auto05 = new Hindernis(-150, lanePixelHoehe * 11 + lanePadding, 150, objektPixelHoehe, 4, Color.parseColor("#750707"), this));
+        spielobjekte.add(auto05 = new Hindernis(-500, lanePixelHoehe * 11 + lanePadding, 150, objektPixelHoehe, 4, Color.parseColor("#750707"), this));
+        spielobjekte.add(auto06 = new Hindernis(-150, lanePixelHoehe * 11 + lanePadding, 150, objektPixelHoehe, 4, Color.parseColor("#750707"), this));
 
-        spielobjekte.add(ziel01 = new Ziel(startPositionX, 0, froschbreite, lanePixelHoehe, Color.parseColor("#000000")));
-        spielobjekte.add(ziel02 = new Ziel(startPositionX + (3 * froschbreite), 0, froschbreite, lanePixelHoehe, Color.parseColor("#000000")));
-        spielobjekte.add(ziel03 = new Ziel(startPositionX - (3 * froschbreite), 0, froschbreite, lanePixelHoehe, Color.parseColor("#000000")));
-        spielobjekte.add(ziel04 = new Ziel(startPositionX + (6 * froschbreite), 0, froschbreite, lanePixelHoehe, Color.parseColor("#000000")));
-        spielobjekte.add(ziel05 = new Ziel(startPositionX - (6 * froschbreite), 0, froschbreite, lanePixelHoehe, Color.parseColor("#000000")));
+        spielobjekte.add(ziel01 = new Ziel(startPositionX, 0, froschBreite, lanePixelHoehe, Color.parseColor("#000000")));
+        spielobjekte.add(ziel02 = new Ziel(startPositionX + (3 * froschBreite), 0, froschBreite, lanePixelHoehe, Color.parseColor("#000000")));
+        spielobjekte.add(ziel03 = new Ziel(startPositionX - (3 * froschBreite), 0, froschBreite, lanePixelHoehe, Color.parseColor("#000000")));
+        spielobjekte.add(ziel04 = new Ziel(startPositionX + (6 * froschBreite), 0, froschBreite, lanePixelHoehe, Color.parseColor("#000000")));
+        spielobjekte.add(ziel05 = new Ziel(startPositionX - (6 * froschBreite), 0, froschBreite, lanePixelHoehe, Color.parseColor("#000000")));
 
-        // frosch geschwindigkeit abhaengig von lanehoehe
-
-
+        spielobjekte.add(frosch = new Frosch(startPositionX, startPositionY, froschBreite, objektPixelHoehe, froschGeschwY, froschGeschwX, Color.parseColor("#9db426"), this));
     }
 
     @Override
@@ -161,14 +180,10 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
         mainThread.setRunning(true);
         mainThread.setPaused(false);
 
-        // 4 Knöpfe und ein Test-Textfeld
-
-        textView = (TextView) findViewById(R.id.textView1);
-
+        // SteuerungsButtons
         Button linksButton = (Button) findViewById(R.id.links);
         linksButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                textView.setText("Links");
                 frosch.setMoved();
                 frosch.setRichtung(richtung.links);
             }
@@ -177,7 +192,6 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
         Button rechtsButton = (Button) findViewById(R.id.rechts);
         rechtsButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                textView.setText("Rechts");
                 frosch.setMoved();
                 frosch.setRichtung(richtung.rechts);
             }
@@ -186,7 +200,6 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
         Button untenButton = (Button) findViewById(R.id.unten);
         untenButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                textView.setText("Unten");
                 frosch.setMoved();
                 frosch.setRichtung(richtung.zurueck);
             }
@@ -195,7 +208,7 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
         Button obenButton = (Button) findViewById(R.id.oben);
         obenButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                textView.setText("Oben");
+                punkte +=10;
                 frosch.setMoved();
                 frosch.setRichtung(richtung.vor);
             }
@@ -230,6 +243,7 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
         Log.d("GameActivity", "onStart");
         super.onStart();
     }
+
     @Override
     public void onStop(){
         Log.d("GameActivity", "onStop");
@@ -244,25 +258,49 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback{
     }
 
     protected void onDraw(Canvas canvas) {
+        renderTimeBegin = System.currentTimeMillis();
+
         canvas.drawColor(Color.BLACK);
         hintergrund.draw(canvas);
         for(Spielobjekt s : spielobjekte){
             s.draw(canvas);
         }
-    }
+        if(frosch.istTot){
+            deadFrosch.draw(canvas);
+        }
+        textFarbe.setTextSize(smallTextSize);
+        canvas.drawText("GCmax|avg: " + mainThread.renderTimeMax + mainThread.renderTimeAvgStr + " (ms)", 10, lanePixelHoehe * 15, textFarbe);
+        canvas.drawText("RCmax|avg: " + renderTimeMax + renderTimeAvgStr + " (ms)", 10, lanePixelHoehe * 15 - (lanePixelHoehe / 2), textFarbe);
+        canvas.drawText("imWasser: " + frosch.imWasser, startPositionX + (froschBreite /2), lanePixelHoehe * 15  - (lanePixelHoehe / 2), textFarbe);
+        canvas.drawText(testText, startPositionX + (froschBreite /2), lanePixelHoehe * 15, textFarbe);
+        textFarbe.setTextSize(largeTextSize);
+        canvas.drawText("Punkte: " + punkte, 10, lanePixelHoehe * 14, textFarbe);
+        canvas.drawText("Tode: " + tode, startPositionX + (froschBreite / 2), lanePixelHoehe * 14, textFarbe);
 
-    public Rect getSpielFlaeche(){
-        return spielFlaeche;
+        renderCycles++;
+        if (renderTime > renderTimeMax){
+            renderTimeMax = renderTime;}
+        renderTime = System.currentTimeMillis()- renderTimeBegin;
+        renderTimeSum = renderTimeSum + renderTime;
+        if(renderCycles == 20){
+            renderTimeAvg = renderTimeSum / renderCycles;
+            renderTimeAvgStr = " | " + renderTimeAvg;
+            renderCycles = 0;
+            renderTimeSum = 0;
+        }
     }
 
     private void erstelleSpielParameter(int width, int height){
-        this.lanePixelHoehe = height * LANE_HOEHE_PROZENT / 100;
-        this.objektPixelHoehe = lanePixelHoehe * OBJEKT_HOEHE_PROZENT / 100;
+        lanePixelHoehe = height * LANE_HOEHE_PROZENT / 100;
+        objektPixelHoehe = lanePixelHoehe * OBJEKT_HOEHE_PROZENT / 100;
         lanePadding = (lanePixelHoehe - objektPixelHoehe)/2; //zentriert die Obj in den Lanes
         spielFlaeche.set(0,0,width,height * LANE_HOEHE_PROZENT / 100 * 13);
-        froschbreite = width / 15;
-        froschSpeed = froschbreite;
-        startPositionX = width / 2 - (froschbreite/2);
+        froschBreite = width / 15;
+        froschGeschwX = froschBreite;
+        froschGeschwY = lanePixelHoehe;
+        startPositionX = width / 2 - (froschBreite /2);
         startPositionY = lanePixelHoehe * 12 + lanePadding;
+        smallTextSize = lanePixelHoehe/3;
+        largeTextSize = objektPixelHoehe;
     }
 }
