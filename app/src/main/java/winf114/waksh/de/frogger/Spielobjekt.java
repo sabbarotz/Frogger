@@ -9,6 +9,8 @@ import android.graphics.Rect;
  */
 public abstract class Spielobjekt {
 
+    // TODO könnt Rect beerben
+
     private int x;                  //horizontale Position der linken oberen Ecke
     private int y;                  //vertikale Position der linken oberen Ecke
     private int breite;             //in Pixeln

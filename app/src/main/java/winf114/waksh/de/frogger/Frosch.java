@@ -1,21 +1,20 @@
 package winf114.waksh.de.frogger;
 
-import android.graphics.Color;
-
 /**
  * Created by bhaetsch on 25.05.2015.
  */
 public class Frosch extends Spielobjekt{
 
-    int geschwindigkeitVertikal;
-    int geschwindigkeitHorizontal;
+    private int geschwindigkeitVertikal;
+    protected int geschwindigkeitHorizontal;
     private boolean moved;
     private richtung r;
     private GameActivity gameActivity;
-    boolean imWasser = false;
-    boolean istTot;
-    boolean warImWasser;
 
+    // TODO Felder einpacken
+    boolean imWasser;
+    boolean istTot;
+    boolean hitTree;
 
     public Frosch(int x, int y, int breite, int hoehe, int geschwindigkeitVertikal, int geschwindigkeitHorizontal,int farbe, GameActivity gameActivity) {
         super(x, y, breite, hoehe, farbe);
@@ -25,12 +24,18 @@ public class Frosch extends Spielobjekt{
         this.geschwindigkeitVertikal = geschwindigkeitVertikal;
         moved = false;
         istTot = false;
-        warImWasser = false;
-
+        hitTree = false;
+        imWasser = false;
     }
 
     public void move(){
+
+        if (hitTree){
+            this.setX(this.getX() + geschwindigkeitHorizontal);
+            setZeichenBereich();
+        }
         if(moved){
+            geschwindigkeitHorizontal = gameActivity.froschGeschwX;
             move(r);
         }
     }
@@ -41,14 +46,13 @@ public class Frosch extends Spielobjekt{
                 this.setY(this.getY() - geschwindigkeitVertikal);
                 if(this.getY() < gameActivity.lanePixelHoehe * 6){
                     imWasser = true;
-                    warImWasser = true;
                 }
                 break;
             case zurueck:
                 this.setY(this.getY() + geschwindigkeitVertikal);
                 if(this.getY() > gameActivity.lanePixelHoehe * 6){
                     imWasser = false;
-
+                    hitTree = false;
                 }
                 break;
             case links:
@@ -70,21 +74,27 @@ public class Frosch extends Spielobjekt{
     public void sterben(){
         gameActivity.tode++;
         istTot = true;
-        gameActivity.deadFrosch.setX(this.getX());
-        gameActivity.deadFrosch.setY(this.getY());
+        gameActivity.deadFrosch.setX(getX());
+        gameActivity.deadFrosch.setY(getY());
         gameActivity.deadFrosch.setZeichenBereich();
         resetFrosch();
     }
 
     public void resetFrosch(){
-        this.setX(gameActivity.startPositionX);
-        this.setY(gameActivity.startPositionY);
-        this.imWasser = false;
-        this.setZeichenBereich();
+        geschwindigkeitHorizontal = gameActivity.froschGeschwX;
+        hitTree = false;
+        imWasser = false;
+        setX(gameActivity.startPositionX);
+        setY(gameActivity.startPositionY);
+        setZeichenBereich();
+    }
+
+    public void setGeschwindigkeitHorizontal(int geschwindigkeitHorizontal) {
+        this.geschwindigkeitHorizontal = geschwindigkeitHorizontal;
     }
 
     public void setMoved(){
-        this.moved = true;
+        moved = true;
     }
 
     public void setRichtung(richtung r) {

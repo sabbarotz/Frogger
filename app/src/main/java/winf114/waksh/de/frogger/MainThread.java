@@ -2,10 +2,6 @@ package winf114.waksh.de.frogger;
 
 import android.view.SurfaceHolder;
 import android.graphics.Canvas;
-import android.util.Log;
-import android.graphics.Rect;
-
-
 
 /**
  * Created by bhaetsch on 25.05.2015.
@@ -18,16 +14,16 @@ public class MainThread extends Thread {
     private GameActivity gameActivity;
     private Canvas canvas;
 
-    protected long renderTimeBegin;
-    protected long renderTime;
-    protected long renderTimeMax;
-    protected long renderTimeAvg;
-    protected String renderTimeAvgStr;
-    protected long renderTimeSum;
-    protected int renderCycles;
+    protected long gameCycleTimeBeginn;
+    protected long gameCycleTime;
+    protected long gameCycleTimeMax;
+    protected long gameCycleTimeAvg;
+    protected String gameCycleTimeAvgStr;
+    protected long gameCycleTimeSum;
+    protected int gameCycles;
 
     int zieleErreicht;
-    boolean hitTree = false;
+
 
     public MainThread(SurfaceHolder surfaceHolder, GameActivity gameActivity) {
         super();
@@ -62,10 +58,10 @@ public class MainThread extends Thread {
                             synchronized (surfaceHolder) {
 
                                 // gamecycle messung
-                                renderTimeBegin = System.currentTimeMillis();
+                                gameCycleTimeBeginn = System.currentTimeMillis();
 
                                 // 20 cycles wird der tote frosch angezeigt
-                                if (renderCycles % 20 == 0){
+                                if (gameCycles % 20 == 0){
                                   gameActivity.frosch.istTot = false;
                                 }
 
@@ -83,76 +79,76 @@ public class MainThread extends Thread {
                                 // alles bewegen
                                 for (Spielobjekt s : gameActivity.spielobjekte) {
                                     s.move();
-
                                 }
 
                                 // Kol Spielobjekt mit Rand
-                                Rect erweiterteSpielFlaeche = new Rect(gameActivity.spielFlaeche.left-500,gameActivity.spielFlaeche.top,gameActivity.spielFlaeche.right+500,gameActivity.spielFlaeche.bottom);
                                 for (Spielobjekt s : gameActivity.spielobjekte) {
                                     if (s instanceof Hindernis) {
-                                        if (!s.kollidiertMit(erweiterteSpielFlaeche)) {
+                                        if (!s.kollidiertMit(gameActivity.erweiterteSpielFlaeche)) {
                                             ((Hindernis) s).erscheintWieder();
                                         }
                                     }
                                 }
 
-                                // Kol Frosch mit Spielobjekt
-                                for (Spielobjekt s : gameActivity.spielobjekte) {
+                                // TODO stirbt bei kontakt mit ziel
+                                //Kol Frosch mit Baum wasser
+                                if (gameActivity.frosch.imWasser){
+                                    gameActivity.frosch.hitTree = false;
+                                    gameActivity.frosch.setGeschwindigkeitHorizontal(gameActivity.froschGeschwX);
+                                    for (Spielobjekt s : gameActivity.spielobjekte) {
+                                        // mit Ziel
+                                        if (s instanceof Ziel) {
+                                            // unbesetzt
+                                            if (gameActivity.frosch.kollidiertMit(s.getZeichenBereich()) && !((Ziel) s).isBesetzt()) {
+                                                zieleErreicht++;
+                                                ((Ziel) s).setBesetzt(true);
+                                                gameActivity.frosch.gewinnt();
+                                            }
+                                            // besetzt
+                                            if (gameActivity.frosch.kollidiertMit(s.getZeichenBereich()) && ((Ziel) s).isBesetzt()) {
+                                                gameActivity.frosch.sterben();
+                                            }
+                                        }
+                                        if (s instanceof Hindernis) {
+                                            if (gameActivity.frosch.kollidiertMit(s.getZeichenBereich())) {
+                                                gameActivity.frosch.hitTree = true;
+                                                gameActivity.frosch.setGeschwindigkeitHorizontal(((Hindernis) s).getGeschwindigkeit());
+                                            }
+                                        }
+                                    }
+                                    if (!gameActivity.frosch.hitTree){
+                                        gameActivity.frosch.sterben();
+                                    }
+                                    gameActivity.testText = "Tree? " + gameActivity.frosch.hitTree + " - Speed: " + gameActivity.frosch.geschwindigkeitHorizontal;
+                                }
 
-                                    // mit hindernis
-                                    if (s instanceof Hindernis) {
-
-                                        //nicht im wasser(auto)
-                                        if (!gameActivity.frosch.imWasser) {
+                                // Kol Frosch mit Auto !wasser
+                                if (!gameActivity.frosch.imWasser){
+                                    for (Spielobjekt s : gameActivity.spielobjekte) {
+                                        if (s instanceof Hindernis) {
                                             if (gameActivity.frosch.kollidiertMit(s.getZeichenBereich())) {
                                                 gameActivity.testText = "hit car";
                                                 gameActivity.frosch.sterben();
-
                                             }
-                                        }
-
-                                        // im wasser (baumstamm)
-                                        if (gameActivity.frosch.imWasser) {
-                                            if (gameActivity.frosch.kollidiertMit(s.getZeichenBereich())) {
-                                                gameActivity.testText = "hit tree";
-                                                hitTree = true;
-                                            }
-                                        }
-                                    }
-
-
-
-                                    // mit Ziel
-                                    if(s instanceof Ziel){
-                                        // unbesetzt
-                                        if (gameActivity.frosch.kollidiertMit(s.getZeichenBereich()) && !((Ziel) s).isBesetzt()) {
-                                            zieleErreicht++;
-                                            ((Ziel) s).setBesetzt(true);
-                                            gameActivity.frosch.gewinnt();
-                                        }
-                                        // besetzt
-                                        if(gameActivity.frosch.kollidiertMit(s.getZeichenBereich()) && ((Ziel) s).isBesetzt()){
-                                            gameActivity.frosch.sterben();
                                         }
                                     }
                                 }
-
 
                                 // Kol Frosch mit Rand
                                 if (!gameActivity.frosch.kollidiertMit(gameActivity.spielFlaeche)) {
                                     gameActivity.frosch.sterben();
                                 }
 
-                                renderCycles++;
-                                if (renderTime > renderTimeMax){
-                                    renderTimeMax = renderTime;}
-                                renderTime = System.currentTimeMillis()- renderTimeBegin;
-                                renderTimeSum = renderTimeSum + renderTime;
-                                if(renderCycles == 20){
-                                    renderTimeAvg = renderTimeSum / renderCycles;
-                                    renderTimeAvgStr = " | " + renderTimeAvg;
-                                    renderCycles = 0;
-                                    renderTimeSum = 0;
+                                gameCycles++;
+                                if (gameCycleTime > gameCycleTimeMax){
+                                    gameCycleTimeMax = gameCycleTime;}
+                                gameCycleTime = System.currentTimeMillis()- gameCycleTimeBeginn;
+                                gameCycleTimeSum = gameCycleTimeSum + gameCycleTime;
+                                if(gameCycles == 20){
+                                    gameCycleTimeAvg = gameCycleTimeSum / gameCycles;
+                                    gameCycleTimeAvgStr = " | " + gameCycleTimeAvg;
+                                    gameCycles = 0;
+                                    gameCycleTimeSum = 0;
                                 }
 
                                 // draws the canvas

@@ -1,8 +1,5 @@
 package winf114.waksh.de.frogger;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
-
 /**
  * Created by Matzef on 30.05.2015.
  */
@@ -17,16 +14,15 @@ public class Ziel extends Spielobjekt {
 
     public void setBesetzt(boolean besetzt) {
         if (besetzt == true){
-            this.getZeichenStift().setColor(Color.parseColor("#9db426"));
+            this.getZeichenStift().setColor(Farbe.zielBesetzt);
             this.setZeichenBereich();
             this.besetzt = true;
         }
         else if (besetzt == false){
-            this.getZeichenStift().setColor(Color.parseColor("#000000"));
+            this.getZeichenStift().setColor(Farbe.zielLeer);
             this.setZeichenBereich();
             this.besetzt = false;
         }
-
     }
 
     public boolean isBesetzt() {

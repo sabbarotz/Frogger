@@ -1,7 +1,6 @@
 package winf114.waksh.de.frogger;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
@@ -20,17 +19,15 @@ public class Hintergrund {
     private float screenbreite;
 
     // die Farben der Bereiche
-    private Paint zielBereichFarbe = new Paint();
-    private Paint wasserBereichFarbe = new Paint();
-    private Paint pausenBereichFarbe = new Paint();
-    private Paint strassenBereichFarbe = new Paint();
-    private Paint startBereichFarbe = new Paint();
-    private Paint strassenMarkierungFarbe = new Paint();
-
-
+    private Farbe farbe = new Farbe();
+    private Paint zielBereichStift = new Paint();
+    private Paint wasserBereichStift = new Paint();
+    private Paint pausenBereichStift = new Paint();
+    private Paint strassenBereichStift = new Paint();
+    private Paint startBereichStift = new Paint();
+    private Paint strassenMarkierungStift = new Paint();
 
     public Hintergrund(int breite, int hoehe) {
-
         this.lanehoehe = hoehe;
         this.screenbreite = breite;
         // definiert die Größe der Bereiche
@@ -48,25 +45,25 @@ public class Hintergrund {
          */
 
         // definiert die Farben der Bereiche
-        zielBereichFarbe.setColor(Color.parseColor("#2f360b"));
-        wasserBereichFarbe.setColor(Color.parseColor("#152a5b"));
-        pausenBereichFarbe.setColor(Color.parseColor("#2f360b"));
-        strassenBereichFarbe.setColor(Color.parseColor("#313131"));
-        startBereichFarbe.setColor(Color.parseColor("#2f360b"));
-        strassenMarkierungFarbe.setColor(Color.parseColor("#ffffff"));
+        zielBereichStift.setColor(Farbe.zielBereich);
+        wasserBereichStift.setColor(Farbe.wasserBereich);
+        pausenBereichStift.setColor(Farbe.zielBereich);
+        strassenBereichStift.setColor(Farbe.strassenBereich);
+        startBereichStift.setColor(Farbe.zielBereich);
+        strassenMarkierungStift.setColor(Farbe.strassenMarkierung);
     }
 
     public void draw(Canvas canvas) {
         // zeichnet die Bereiche
         // drawRect(Rect,Paint)
-        canvas.drawRect(zielBereich, zielBereichFarbe);
-        canvas.drawRect(wasserBereich, wasserBereichFarbe);
-        canvas.drawRect(pausenBereich, pausenBereichFarbe);
-        canvas.drawRect(strassenBereich, strassenBereichFarbe);
-        canvas.drawRect(startBereich, startBereichFarbe);
-        canvas.drawLine(0, lanehoehe * 8, screenbreite, lanehoehe * 8, strassenMarkierungFarbe);
-        canvas.drawLine(0,lanehoehe * 9 ,screenbreite,lanehoehe * 9,strassenMarkierungFarbe);
-        canvas.drawLine(0,lanehoehe * 10 ,screenbreite,lanehoehe * 10,strassenMarkierungFarbe);
-        canvas.drawLine(0,lanehoehe * 11 ,screenbreite,lanehoehe * 11,strassenMarkierungFarbe);
+        canvas.drawRect(zielBereich, zielBereichStift);
+        canvas.drawRect(wasserBereich, wasserBereichStift);
+        canvas.drawRect(pausenBereich, pausenBereichStift);
+        canvas.drawRect(strassenBereich, strassenBereichStift);
+        canvas.drawRect(startBereich, startBereichStift);
+        canvas.drawLine(0, lanehoehe * 8, screenbreite, lanehoehe * 8, strassenMarkierungStift);
+        canvas.drawLine(0,lanehoehe * 9 ,screenbreite,lanehoehe * 9, strassenMarkierungStift);
+        canvas.drawLine(0,lanehoehe * 10 ,screenbreite,lanehoehe * 10, strassenMarkierungStift);
+        canvas.drawLine(0,lanehoehe * 11 ,screenbreite,lanehoehe * 11, strassenMarkierungStift);
     }
 }
