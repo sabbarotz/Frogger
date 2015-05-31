@@ -22,7 +22,7 @@ public class MainThread extends Thread {
     protected long gameCycleTimeSum;
     protected int gameCycles;
 
-    int zieleErreicht;
+    private int zieleErreicht;
 
 
     public MainThread(SurfaceHolder surfaceHolder, GameActivity gameActivity) {
@@ -116,11 +116,12 @@ public class MainThread extends Thread {
                                             }
                                         }
                                     }
-                                    if (!gameActivity.frosch.hitTree){
+                                    if (!gameActivity.frosch.hitTree && !gameActivity.frosch.imZiel){
                                         gameActivity.frosch.sterben();
                                     }
                                     gameActivity.testText = "Tree? " + gameActivity.frosch.hitTree + " - Speed: " + gameActivity.frosch.geschwindigkeitHorizontal;
                                 }
+                                gameActivity.frosch.imZiel = false;
 
                                 // Kol Frosch mit Auto !wasser
                                 if (!gameActivity.frosch.imWasser){
